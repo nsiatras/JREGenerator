@@ -24,7 +24,7 @@
 package jregenerator;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import java.util.Locale;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -36,6 +36,9 @@ public class frmMain extends javax.swing.JFrame
     public frmMain()
     {
         initComponents();
+        this.setLocationRelativeTo(null);
+
+        jTextFieldJDKPath.setText(System.getenv("JAVA_HOME"));
     }
 
     /**
@@ -48,37 +51,129 @@ public class frmMain extends javax.swing.JFrame
     private void initComponents()
     {
 
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jTextFieldJDKPath = new javax.swing.JTextField();
+        jButtonBrowseJDK = new javax.swing.JButton();
+        jButtonOK = new javax.swing.JButton();
+        jButtonExit = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("JRE Generator");
+        setResizable(false);
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel1.setText("Select the path of the JDK you want to use:");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel2.setText("JDK:");
+
+        jTextFieldJDKPath.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jButtonBrowseJDK.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jButtonBrowseJDK.setText("...");
+        jButtonBrowseJDK.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButtonBrowseJDKActionPerformed(evt);
+            }
+        });
+
+        jButtonOK.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jButtonOK.setText("OK");
+        jButtonOK.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButtonOKActionPerformed(evt);
+            }
+        });
+
+        jButtonExit.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jButtonExit.setText("Exit");
+        jButtonExit.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButtonExitActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButtonOK)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButtonExit))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextFieldJDKPath, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButtonBrowseJDK, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addComponent(jLabel1)
+                .addGap(15, 15, 15)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jTextFieldJDKPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonBrowseJDK))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonOK)
+                    .addComponent(jButtonExit))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonOKActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonOKActionPerformed
+    {//GEN-HEADEREND:event_jButtonOKActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonOKActionPerformed
+
+    private void jButtonExitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonExitActionPerformed
+    {//GEN-HEADEREND:event_jButtonExitActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_jButtonExitActionPerformed
+
+    private void jButtonBrowseJDKActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonBrowseJDKActionPerformed
+    {//GEN-HEADEREND:event_jButtonBrowseJDKActionPerformed
+        JFileChooser chooser;
+        chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File("."));
+        chooser.setDialogTitle("Select the JDK path you want to use");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+        {
+            String jdkPath = chooser.getSelectedFile().toString();
+            jTextFieldJDKPath.setText(jdkPath);
+        }
+        else
+        {
+            System.out.println("No Selection ");
+        }
+    }//GEN-LAST:event_jButtonBrowseJDKActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[])
     {
-        try
-        {
-            // Change Locale
-            final Locale defaultLocale = new Locale(Locale.ENGLISH.getLanguage(), Locale.US.getCountry());
-            Locale.setDefault(defaultLocale);
-        }
-        catch (Exception ex)
-        {
-            //JOptionPane.showMessageDialog(null, "JREGenerator wasn't able to set application regional settings to US English.\nWe suggest you change your operating system's regional settings to US English before you continue!", "Warning", JOptionPane.ERROR_MESSAGE);
-        }
 
         FlatLightLaf.setup();
 
@@ -90,5 +185,11 @@ public class frmMain extends javax.swing.JFrame
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonBrowseJDK;
+    private javax.swing.JButton jButtonExit;
+    private javax.swing.JButton jButtonOK;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JTextField jTextFieldJDKPath;
     // End of variables declaration//GEN-END:variables
 }
