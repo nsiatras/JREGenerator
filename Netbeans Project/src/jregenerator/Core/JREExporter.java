@@ -41,10 +41,10 @@ public class JREExporter
 
     }
 
-    public void Export(JDK jdkToExport, ArrayList<JavaModule> modules) throws IOException
+    public void Export(JDK jdkToExport, ArrayList<JavaModule> modules, String exportPath) throws IOException
     {
         //String command = jdkToExport.getPath() + "\\bin\\jlink.exe --output \"C:\\Users\\nsiat\\Desktop\\jre\" --module-path ..\\jmods --add-modules #MODULES# --strip-debug --no-man-pages";
-        String command = jdkToExport.getPath() + "\\bin\\jlink.exe --output \"C:\\Users\\nsiat\\Desktop\\jre\" --module-path ..\\jmods --add-modules #MODULES# --no-man-pages";
+        String command = jdkToExport.getPath() + "\\bin\\jlink.exe --output \"" + exportPath + "\\jre\" --module-path ..\\jmods --add-modules #MODULES# --no-man-pages";
 
         String modulesStr = "";
         for (JavaModule m : modules)

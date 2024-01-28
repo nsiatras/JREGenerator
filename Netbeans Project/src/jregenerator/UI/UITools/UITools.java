@@ -61,7 +61,6 @@ public class UITools
         for (String line : descriptionLines)
         {
             final JLabel lbl = new JLabel("   " + line + "  ");
-            lbl.setForeground(Color.WHITE);
             p1.add(lbl, BorderLayout.CENTER);
         }
         p1.add(new JLabel(" "), BorderLayout.CENTER);

@@ -264,27 +264,50 @@ public class frmJREExport extends javax.swing.JFrame
 
     private void jMenuItemExportJREActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItemExportJREActionPerformed
     {//GEN-HEADEREND:event_jMenuItemExportJREActionPerformed
-        ArrayList<JavaModule> selectedModules = new ArrayList<>();
-        for (int i = 0; i < jTableModules.getRowCount(); i++)
+        final String jreExportPath;
+        JFileChooser chooser;
+        chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File("."));
+        chooser.setDialogTitle("Choose the directory to export the JRE");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
-            String moduleTitle = jTableModules.getValueAt(i, 0).toString();
-            boolean selected = (boolean) jTableModules.getValueAt(i, 2);
-            if (selected)
+            jreExportPath = chooser.getSelectedFile().toString();
+        }
+        else
+        {
+            jreExportPath = "";
+            System.out.println("No Selection ");
+        }
+
+        if (!jreExportPath.equals(""))
+        {
+            UITools.ShowPleaseWaitDialog("JRE Export", "Please wait. This can take some time...", this, () ->
             {
-                selectedModules.add(fJDK.getJavaModuleByTitle(moduleTitle));
-            }
-        }
+                ArrayList<JavaModule> selectedModules = new ArrayList<>();
+                for (int i = 0; i < jTableModules.getRowCount(); i++)
+                {
+                    String moduleTitle = jTableModules.getValueAt(i, 0).toString();
+                    boolean selected = (boolean) jTableModules.getValueAt(i, 2);
+                    if (selected)
+                    {
+                        selectedModules.add(fJDK.getJavaModuleByTitle(moduleTitle));
+                    }
+                }
 
-        try
-        {
-            JREExporter exporter = new JREExporter();
-            exporter.Export(fJDK, selectedModules);
-        }
-        catch (Exception ex)
-        {
+                try
+                {
+                    JREExporter exporter = new JREExporter();
+                    exporter.Export(fJDK, selectedModules, jreExportPath);
+                }
+                catch (Exception ex)
+                {
+
+                }
+            });
 
         }
-
 
     }//GEN-LAST:event_jMenuItemExportJREActionPerformed
 
