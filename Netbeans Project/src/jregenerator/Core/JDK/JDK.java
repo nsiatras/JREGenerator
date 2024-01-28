@@ -24,6 +24,8 @@
 package jregenerator.Core.JDK;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import jregenerator.Utilities.DosPromt;
 
@@ -55,11 +57,16 @@ public class JDK
      * @return
      * @throws IOException
      */
-    public ArrayList<JavaModule> getModules() throws IOException
+    public ArrayList<JavaModule> getModules() throws IOException, Exception
     {
         if (fModules.isEmpty())
         {
-            String result = DosPromt.ExecuteDOSPromt(this.getPath() + "\\bin\\java --list-modules");
+            if (!Files.exists(Paths.get(this.getPath() + "\\bin\\java.exe")))
+            {
+                throw new Exception("Invalid JDK path");
+            }
+
+            String result = DosPromt.ExecuteDOSPromt(this.getPath() + "\\bin\\java.exe --list-modules");
             String[] lines = result.split("\n");
             for (String line : lines)
             {

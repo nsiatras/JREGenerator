@@ -24,12 +24,8 @@
 package jregenerator;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ScanResult;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Set;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -39,7 +35,6 @@ import jregenerator.Core.JRETemplates.JRETempatesManager;
 import jregenerator.Core.JRETemplates.JRETemplate;
 import jregenerator.Core.JDK.JavaModule;
 import jregenerator.UI.UITools.UITools;
-import jregenerator.Utilities.DosPromt;
 
 /**
  *
@@ -48,20 +43,21 @@ import jregenerator.Utilities.DosPromt;
 public class frmJREExport extends javax.swing.JFrame
 {
 
-    private JDK fJDK;
+    private final JDK fJDK;
 
     /**
      * Creates new form frmMain
      */
-    public frmJREExport()
+    public frmJREExport(JDK jdkToUse)
     {
         initComponents();
+        fJDK = jdkToUse;
         this.setLocationRelativeTo(null);
     }
 
     private void InitializeUI()
     {
-        jLabelJavaHome.setText("JAVA_HOME: " + System.getenv("JAVA_HOME"));
+        jLabelJavaHome.setText("JAVA_HOME: " + fJDK.getPath());
 
         // Initialize templateComboBox
         for (JRETemplate template : JRETempatesManager.getTemplates())
@@ -69,16 +65,12 @@ public class frmJREExport extends javax.swing.JFrame
             jComboBoxTemplates.addItem(template.getTitle());
         }
 
-        SetJDK(System.getenv("JAVA_HOME"));
-    }
-
-    private void SetJDK(String path)
-    {
         UITools.ShowPleaseWaitDialog("Please Wait", "Loading JDK Modules", this, () ->
         {
-            fJDK = new JDK(path);
             UpdateJavaModulesTable();
         });
+
+        //SetJDK(System.getenv("JAVA_HOME"));
     }
 
     private void UpdateJavaModulesTable()
@@ -122,8 +114,6 @@ public class frmJREExport extends javax.swing.JFrame
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItemExportJRE = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        jMenuItemChooseJDK = new javax.swing.JMenuItem();
 
         jMenu3.setText("jMenu3");
 
@@ -171,7 +161,7 @@ public class frmJREExport extends javax.swing.JFrame
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 630, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -232,20 +222,6 @@ public class frmJREExport extends javax.swing.JFrame
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("JDK");
-
-        jMenuItemChooseJDK.setText("Choose JDK");
-        jMenuItemChooseJDK.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                jMenuItemChooseJDKActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItemChooseJDK);
-
-        jMenuBar1.add(jMenu2);
-
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -261,8 +237,8 @@ public class frmJREExport extends javax.swing.JFrame
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBoxTemplates, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 356, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addGap(0, 347, Short.MAX_VALUE)))
+                .addGap(15, 15, 15))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -317,65 +293,19 @@ public class frmJREExport extends javax.swing.JFrame
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenu1ActionPerformed
 
-    private void jMenuItemChooseJDKActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItemChooseJDKActionPerformed
-    {//GEN-HEADEREND:event_jMenuItemChooseJDKActionPerformed
-        JFileChooser chooser;
-        chooser = new JFileChooser();
-        chooser.setCurrentDirectory(new java.io.File("."));
-        chooser.setDialogTitle("Select the JDK path you want to use");
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
-        {
-            String jdkPath = chooser.getSelectedFile().toString();
-            jLabelJavaHome.setText(jdkPath);
-            SetJDK(jdkPath);
-        }
-        else
-        {
-            System.out.println("No Selection ");
-        }
-    }//GEN-LAST:event_jMenuItemChooseJDKActionPerformed
-
     private void formWindowOpened(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowOpened
     {//GEN-HEADEREND:event_formWindowOpened
         InitializeUI();
     }//GEN-LAST:event_formWindowOpened
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[])
-    {
-        try
-        {
-            // Change Locale
-            final Locale defaultLocale = new Locale(Locale.ENGLISH.getLanguage(), Locale.US.getCountry());
-            Locale.setDefault(defaultLocale);
-        }
-        catch (Exception ex)
-        {
-            JOptionPane.showMessageDialog(null, "RabbitCAM wasn't able to set application regional settings to US English.\nWe suggest you change your operating system's regional settings to US English before you continue!", "Warning", JOptionPane.ERROR_MESSAGE);
-        }
-
-        FlatLightLaf.setup();
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() ->
-        {
-            new frmJREExport().setVisible(true);
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> jComboBoxTemplates;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabelJavaHome;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItemChooseJDK;
     private javax.swing.JMenuItem jMenuItemExportJRE;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
