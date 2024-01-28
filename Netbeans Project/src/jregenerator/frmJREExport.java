@@ -23,11 +23,8 @@
  */
 package jregenerator;
 
-import com.formdev.flatlaf.FlatLightLaf;
 import java.util.ArrayList;
-import java.util.Locale;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jregenerator.Core.JDK.JDK;
 import jregenerator.Core.JREExporter;
