@@ -31,6 +31,7 @@ import java.net.URISyntaxException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import jregenerator.Core.JDK.JDK;
+import jregenerator.Core.Settings.SettingsManager;
 
 /**
  *
@@ -43,6 +44,8 @@ public class frmMain extends javax.swing.JFrame
     {
         initComponents();
         this.setLocationRelativeTo(null);
+        
+        this.setTitle("JREGenerator - v" + SettingsManager.APP_VERSION);
 
     }
 

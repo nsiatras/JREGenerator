@@ -35,6 +35,7 @@ import jregenerator.Core.JREExporter;
 import jregenerator.Core.JRETemplates.JRETempatesManager;
 import jregenerator.Core.JRETemplates.JRETemplate;
 import jregenerator.Core.JDK.JavaModule;
+import jregenerator.Core.Settings.SettingsManager;
 import jregenerator.UI.UITools.UITools;
 
 /**
@@ -48,12 +49,15 @@ public class frmJREExport extends javax.swing.JFrame
 
     /**
      * Creates new form frmMain
+     *
+     * @param jdkToUse
      */
     public frmJREExport(JDK jdkToUse)
     {
         initComponents();
         fJDK = jdkToUse;
         this.setLocationRelativeTo(null);
+        this.setTitle("JREGenerator - v" + SettingsManager.APP_VERSION);
     }
 
     private void InitializeUI()
@@ -78,23 +82,87 @@ public class frmJREExport extends javax.swing.JFrame
     {
         JRETemplate selectedTemplate = JRETempatesManager.getByTitle(jComboBoxTemplates.getSelectedItem().toString());
 
-        DefaultTableModel model = (DefaultTableModel) jTableModules.getModel();
-        try
+        if (selectedTemplate != null)
         {
-            // Clear Rows
-            model.setNumRows(0);
-
-            for (JavaModule mod : fJDK.getModules())
+            DefaultTableModel model = (DefaultTableModel) jTableModules.getModel();
+            try
             {
-                boolean selected = selectedTemplate.ContainsModule(mod);
-                model.addRow(new Object[]
+                // Clear Rows
+                model.setNumRows(0);
+
+                for (JavaModule mod : fJDK.getModules())
                 {
-                    mod.getTitle(), mod.getVersion(), selected
-                });
+                    boolean selected = selectedTemplate.ContainsModule(mod);
+                    model.addRow(new Object[]
+                    {
+                        mod.getTitle(), mod.getVersion(), selected
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
             }
         }
-        catch (Exception ex)
+        UpdateSelectedModulesCount();
+    }
+
+    private ArrayList<JavaModule> getUserSelectedModules()
+    {
+        ArrayList<JavaModule> result = new ArrayList<>();
+        for (int i = 0; i < jTableModules.getRowCount(); i++)
         {
+            String moduleTitle = jTableModules.getValueAt(i, 0).toString();
+            boolean selected = (boolean) jTableModules.getValueAt(i, 2);
+            if (selected)
+            {
+                result.add(fJDK.getJavaModuleByTitle(moduleTitle));
+            }
+        }
+
+        return result;
+    }
+
+    private void UpdateSelectedModulesCount()
+    {
+        jLabelSelectedModulesCount.setText("Selected: " + String.valueOf(this.getUserSelectedModules().size()));
+    }
+
+    private void ExportJRE()
+    {
+        final String jreExportPath;
+        JFileChooser chooser;
+        chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File("."));
+        chooser.setDialogTitle("Choose the directory to export the JRE");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+        {
+            jreExportPath = chooser.getSelectedFile().toString();
+        }
+        else
+        {
+            jreExportPath = "";
+            System.out.println("No Selection ");
+        }
+
+        if (!jreExportPath.equals(""))
+        {
+            UITools.ShowPleaseWaitDialog("JRE Export", "Please wait. This can take some time...", this, () ->
+            {
+                final ArrayList<JavaModule> selectedModules = this.getUserSelectedModules();
+
+                try
+                {
+                    JREExporter exporter = new JREExporter();
+                    exporter.Export(fJDK, selectedModules, jreExportPath);
+                }
+                catch (Exception ex)
+                {
+
+                }
+            });
 
         }
     }
@@ -105,6 +173,7 @@ public class frmJREExport extends javax.swing.JFrame
     {
 
         jMenu3 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jToolBar1 = new javax.swing.JToolBar();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel2 = new javax.swing.JLabel();
@@ -122,11 +191,19 @@ public class frmJREExport extends javax.swing.JFrame
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        jLabelSelectedModulesCount = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jButtonExportNow = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItemExportJRE = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         jMenu3.setText("jMenu3");
+
+        jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("JRE Generator");
@@ -162,7 +239,7 @@ public class frmJREExport extends javax.swing.JFrame
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jregenerator/Resources/module-64x64.png"))); // NOI18N
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jLabel5.setText("Choose JRE Modules");
+        jLabel5.setText("Choose Java Modules");
 
         jTableModules.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTableModules.setModel(new javax.swing.table.DefaultTableModel(
@@ -189,6 +266,13 @@ public class frmJREExport extends javax.swing.JFrame
         jTableModules.setRowHeight(24);
         jTableModules.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTableModules.getTableHeader().setReorderingAllowed(false);
+        jTableModules.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mouseReleased(java.awt.event.MouseEvent evt)
+            {
+                jTableModulesMouseReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTableModules);
 
         jLabelJavaHome.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
@@ -214,18 +298,18 @@ public class frmJREExport extends javax.swing.JFrame
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabelJavaHome)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 317, Short.MAX_VALUE)
+                .addComponent(jLabelJavaHome, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel6)
                 .addGap(0, 0, 0)
                 .addComponent(jLabel7))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel6)
                         .addComponent(jLabel7))
                     .addComponent(jLabelJavaHome))
@@ -237,6 +321,27 @@ public class frmJREExport extends javax.swing.JFrame
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         jLabel9.setText("Select which Java Modules you want to export with the JRE");
+
+        jLabelSelectedModulesCount.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabelSelectedModulesCount.setText("Selected: 0");
+
+        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jregenerator/Resources/export-64x64.png"))); // NOI18N
+
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel11.setText("Export JRE");
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
+        jLabel12.setText("Export JRE with the above selected Java Modules");
+
+        jButtonExportNow.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jButtonExportNow.setText("Export Now !");
+        jButtonExportNow.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButtonExportNowActionPerformed(evt);
+            }
+        });
 
         jMenu1.setText("File");
         jMenu1.addActionListener(new java.awt.event.ActionListener()
@@ -257,6 +362,16 @@ public class frmJREExport extends javax.swing.JFrame
         });
         jMenu1.add(jMenuItemExportJRE);
 
+        jMenuItem2.setText("Exit");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
+
         jMenuBar1.add(jMenu1);
 
         setJMenuBar(jMenuBar1);
@@ -266,26 +381,25 @@ public class frmJREExport extends javax.swing.JFrame
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 511, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 721, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabelSelectedModulesCount, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(20, 20, 20)
+                            .addComponent(jLabel4)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel5)
+                                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 511, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(30, 30, 30)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 721, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(0, 30, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(30, 30, 30)
-                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(20, 20, 20)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -299,28 +413,39 @@ public class frmJREExport extends javax.swing.JFrame
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabel3)
-                                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 511, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 511, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(30, 30, 30)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButtonExportNow)
+                                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator1)
-                            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING))))
+                            .addComponent(jSeparator2))))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(jLabel10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel11)
+                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 511, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel8))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel2)))
+                    .addComponent(jLabel2))
                 .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
@@ -335,10 +460,21 @@ public class frmJREExport extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel9)))
                 .addGap(15, 15, 15)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelSelectedModulesCount)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel10)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel12)))
+                .addGap(18, 18, 18)
+                .addComponent(jButtonExportNow)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -353,50 +489,7 @@ public class frmJREExport extends javax.swing.JFrame
 
     private void jMenuItemExportJREActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItemExportJREActionPerformed
     {//GEN-HEADEREND:event_jMenuItemExportJREActionPerformed
-        final String jreExportPath;
-        JFileChooser chooser;
-        chooser = new JFileChooser();
-        chooser.setCurrentDirectory(new java.io.File("."));
-        chooser.setDialogTitle("Choose the directory to export the JRE");
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
-        {
-            jreExportPath = chooser.getSelectedFile().toString();
-        }
-        else
-        {
-            jreExportPath = "";
-            System.out.println("No Selection ");
-        }
 
-        if (!jreExportPath.equals(""))
-        {
-            UITools.ShowPleaseWaitDialog("JRE Export", "Please wait. This can take some time...", this, () ->
-            {
-                ArrayList<JavaModule> selectedModules = new ArrayList<>();
-                for (int i = 0; i < jTableModules.getRowCount(); i++)
-                {
-                    String moduleTitle = jTableModules.getValueAt(i, 0).toString();
-                    boolean selected = (boolean) jTableModules.getValueAt(i, 2);
-                    if (selected)
-                    {
-                        selectedModules.add(fJDK.getJavaModuleByTitle(moduleTitle));
-                    }
-                }
-
-                try
-                {
-                    JREExporter exporter = new JREExporter();
-                    exporter.Export(fJDK, selectedModules, jreExportPath);
-                }
-                catch (Exception ex)
-                {
-
-                }
-            });
-
-        }
 
     }//GEN-LAST:event_jMenuItemExportJREActionPerformed
 
@@ -422,10 +515,41 @@ public class frmJREExport extends javax.swing.JFrame
         }
     }//GEN-LAST:event_jLabel7MouseClicked
 
+    private void jTableModulesMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_jTableModulesMouseReleased
+    {//GEN-HEADEREND:event_jTableModulesMouseReleased
+        final JRETemplate selectedTemplate = JRETempatesManager.getByTitle(jComboBoxTemplates.getSelectedItem().toString());
+        final ArrayList<JavaModule> selectedModules = this.getUserSelectedModules();
+
+        /*for (JavaModule mod : selectedModules)
+        {
+            if (!selectedTemplate.ContainsModule(mod))
+            {
+                selectedModulesBelongsToTemplate = false;
+                break;
+            }
+        }*/
+        UpdateSelectedModulesCount();
+
+    }//GEN-LAST:event_jTableModulesMouseReleased
+
+    private void jButtonExportNowActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonExportNowActionPerformed
+    {//GEN-HEADEREND:event_jButtonExportNowActionPerformed
+        ExportJRE();
+    }//GEN-LAST:event_jButtonExportNowActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem2ActionPerformed
+    {//GEN-HEADEREND:event_jMenuItem2ActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonExportNow;
     private javax.swing.JComboBox<String> jComboBoxTemplates;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -435,9 +559,12 @@ public class frmJREExport extends javax.swing.JFrame
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelJavaHome;
+    private javax.swing.JLabel jLabelSelectedModulesCount;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItemExportJRE;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;

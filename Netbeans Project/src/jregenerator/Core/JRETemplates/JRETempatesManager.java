@@ -42,6 +42,7 @@ public class JRETempatesManager
         fJRETemplates.add(new JRETemplate_Compact1());
         fJRETemplates.add(new JRETemplate_Compact2());
         fJRETemplates.add(new JRETemplate_Compact3());
+        fJRETemplates.add(new JRETemplate_Full());
         fJRETemplates.add(new JRETemplate_DesktopApplications());
         fJRETemplates.add(new JRETemplate_DesktopApplicationsWithNetwork());
     }
