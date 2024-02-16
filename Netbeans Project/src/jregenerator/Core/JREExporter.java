@@ -23,6 +23,7 @@
  */
 package jregenerator.Core;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import jregenerator.Core.JDK.JDK;
@@ -41,16 +42,25 @@ public class JREExporter
 
     }
 
-    public void Export(JDK jdkToExport, ArrayList<JavaModule> modules, String exportPath) throws IOException
+    public void Export(JDK jdkToExport, ArrayList<JavaModule> modules, String exportPath, boolean stripDebug, boolean noManPages) throws IOException
     {
         //String command = jdkToExport.getPath() + "\\bin\\jlink.exe --output \"C:\\Users\\nsiat\\Desktop\\jre\" --module-path ..\\jmods --add-modules #MODULES# --strip-debug --no-man-pages";
-        String command = jdkToExport.getPath() + "\\bin\\jlink.exe --output \"" + exportPath + "\\jre\" --module-path ..\\jmods --add-modules #MODULES# --no-man-pages";
+        // C:\GraalVM\bin\jlink --output "C:\Users\nsiat\Desktop\jre" --module-path ..\jmods --add-modules #MODULES# --no-man-pages
+        String command = jdkToExport.getPath() + File.separator + "bin" + File.separator + "jlink --output \"" + exportPath + File.separator + "jre\" --module-path .." + File.separator + "jmods --add-modules #MODULES# #STRIP_DEBUG# #NO_MAN_PAGES#";
+
+        command = stripDebug ? command.replace("#STRIP_DEBUG#", "--strip-debug") : command.replace("#STRIP_DEBUG#", "");
+        command = stripDebug ? command.replace("#NO_MAN_PAGES#", "--no-man-pages") : command.replace("#NO_MAN_PAGES#", "");
+
+        // Replace double space with single
+        command = command.replace("  ", " ");
+        command = command.trim();
 
         String modulesStr = "";
         for (JavaModule m : modules)
         {
             modulesStr += m.getTitle() + ",";
         }
+
         if (modulesStr.endsWith(","))
         {
             modulesStr = modulesStr.substring(0, modulesStr.length() - 1);

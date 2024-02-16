@@ -125,6 +125,8 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jButtonExportNow" min="-2" max="-2" attributes="0"/>
                                   <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jCheckBoxStripDebug" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jCheckBoxNoManPages" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -197,8 +199,12 @@
                   </Group>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="jCheckBoxStripDebug" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="jCheckBoxNoManPages" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
               <Component id="jButtonExportNow" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="14" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -445,6 +451,16 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonExportNowActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="jCheckBoxStripDebug">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Strip Debug - Will remove debugging information out of the output runtime image"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="jCheckBoxNoManPages">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="No Man Pages - Excludes man pages"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

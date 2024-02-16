@@ -57,7 +57,7 @@ public class JRETemplate_DesktopApplicationsWithNetwork extends JRETemplate
         super.getModules().add(new JavaModule("java.sql.rowset"));
         super.getModules().add(new JavaModule("java.xml.crypto"));
         super.getModules().add(new JavaModule("java.se"));
-        super.getModules().add(new JavaModule("java.smartcardio"));
+        //super.getModules().add(new JavaModule("java.smartcardio"));
 
         super.getModules().add(new JavaModule("jdk.crypto.ec"));
         super.getModules().add(new JavaModule("jdk.crypto.cryptoki"));

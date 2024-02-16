@@ -156,7 +156,7 @@ public class frmJREExport extends javax.swing.JFrame
                 try
                 {
                     JREExporter exporter = new JREExporter();
-                    exporter.Export(fJDK, selectedModules, jreExportPath);
+                    exporter.Export(fJDK, selectedModules, jreExportPath, jCheckBoxStripDebug.isSelected(), jCheckBoxNoManPages.isSelected());
                 }
                 catch (Exception ex)
                 {
@@ -196,6 +196,8 @@ public class frmJREExport extends javax.swing.JFrame
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jButtonExportNow = new javax.swing.JButton();
+        jCheckBoxStripDebug = new javax.swing.JCheckBox();
+        jCheckBoxNoManPages = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItemExportJRE = new javax.swing.JMenuItem();
@@ -343,6 +345,10 @@ public class frmJREExport extends javax.swing.JFrame
             }
         });
 
+        jCheckBoxStripDebug.setText("Strip Debug - Will remove debugging information out of the output runtime image");
+
+        jCheckBoxNoManPages.setText("No Man Pages - Excludes man pages");
+
         jMenu1.setText("File");
         jMenu1.addActionListener(new java.awt.event.ActionListener()
         {
@@ -418,7 +424,9 @@ public class frmJREExport extends javax.swing.JFrame
                                 .addGap(30, 30, 30)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jButtonExportNow)
-                                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jCheckBoxStripDebug)
+                                    .addComponent(jCheckBoxNoManPages))))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
@@ -473,8 +481,12 @@ public class frmJREExport extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel12)))
                 .addGap(18, 18, 18)
+                .addComponent(jCheckBoxStripDebug)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jCheckBoxNoManPages)
+                .addGap(10, 10, 10)
                 .addComponent(jButtonExportNow)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addGap(15, 15, 15)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -545,6 +557,8 @@ public class frmJREExport extends javax.swing.JFrame
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonExportNow;
+    private javax.swing.JCheckBox jCheckBoxNoManPages;
+    private javax.swing.JCheckBox jCheckBoxStripDebug;
     private javax.swing.JComboBox<String> jComboBoxTemplates;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

@@ -45,7 +45,7 @@ public class DosPromt
         while (true)
         {
             line = r.readLine();
-            System.out.println(line);
+            //System.out.println(line);
             result += line + "\n";
             if (line == null)
             {
