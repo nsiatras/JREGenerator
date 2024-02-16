@@ -8,4 +8,9 @@ It allows Java developers to choose which Java Modules they need in order to cre
 </center>
 
 
+## How it works
+
+[![Watch the video](https://i.ytimg.com/vi/SU2QS4dwAAU/maxresdefault.jpg)](https://www.youtube.com/watch?v=SU2QS4dwAAU "Watch the video")   
+
+<br>Video URL: https://www.youtube.com/watch?v=SU2QS4dwAAU
 
