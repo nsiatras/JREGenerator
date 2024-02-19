@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "JREGenerator"
-#define MyAppVersion "1.0.1"
+#define MyAppVersion "1.0.2"
 #define MyAppPublisher "Nikolaos Siatras"
 #define MyAppURL "https://github.com/nsiatras"
 #define MyAppExeName "JREGenerator.exe"
